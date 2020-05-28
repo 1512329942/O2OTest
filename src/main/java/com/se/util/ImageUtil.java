@@ -17,6 +17,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -54,9 +55,9 @@ public class ImageUtil {
      * @Params: [thumbnail, targetAddr]
      * @return: java.lang.String
      */
-    public static String generateThumbnail(File thumbnail,String targetAddr){
+    public static String generateThumbnail(InputStream thumbnailInputStream, String fileName, String targetAddr){
         String realFileName=getRandomFileName();//随机文件名
-        String extension=getFileExtension(thumbnail);//文件扩展名
+        String extension=getFileExtension(fileName);//文件扩展名
         makeDirPath(targetAddr);//创建目录
         //相对路径
         String relativeAddr=targetAddr+realFileName+extension;//相对路径+文件名
@@ -66,7 +67,7 @@ public class ImageUtil {
         File dest=new File(PathUtil.getImgBasePath()+relativeAddr);//绝对路径
         System.out.println(dest.getAbsolutePath());
         try{
-            Thumbnails.of(thumbnail).size(200,200).watermark(Positions.BOTTOM_RIGHT, ImageIO.
+            Thumbnails.of(thumbnailInputStream).size(200,200).watermark(Positions.BOTTOM_RIGHT, ImageIO.
                     read(new File("F:\\校园商铺\\第26项目：SSM到Spring Boot-校园商铺平台\\images\\item\\watermark.jpg")),0.25f).
                     outputQuality(0.8f).toFile(dest);
         }catch (Exception e){
@@ -90,19 +91,19 @@ public class ImageUtil {
 
     /**
      * 获取输入文件流的扩展名
-     * @param thumbnail
+     * @param fileName
      * @return
      */
-    private static String getFileExtension(File thumbnail) {
-        String originalFileName=thumbnail.getName();
-        return originalFileName.substring(originalFileName.lastIndexOf("."));
+    private static String getFileExtension(String fileName) {
+
+        return fileName.substring(fileName.lastIndexOf("."));
     }
 
     /**
      * 生成随机的文件，当前年月日+小时分+5位随机数
      * @return
      */
-    private static String getRandomFileName() {
+    public  static String getRandomFileName() {
         int rannum=r.nextInt(89999)+10000;
         String nowTimeStr=simpleDateFormat.format(new Date());
         return  nowTimeStr+rannum;

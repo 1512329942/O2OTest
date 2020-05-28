@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -36,10 +37,9 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional//事务控制
-    public ShopExecution addShop(Shop shop, File shopImg) {
+    public ShopExecution addShop(Shop shop, InputStream shopImgInputStream, String fileName) {
         //空值判断
         if (shop==null){
-
             return new ShopExecution(ShopStateEnum.NULL_SHOP);
         }
 
@@ -59,12 +59,12 @@ public class ShopServiceImpl implements ShopService {
                  * 不会回滚
                  */
             }else{
-                if(shopImg!=null){
+                if(shopImgInputStream!=null){
                     //存储图片
                     try{
-                        addShopImg(shop,shopImg);
+                        addshopImgInputStream(shop,shopImgInputStream,fileName);
                     }catch(Exception e){
-                        throw new ShopOperationException("addShopImg error:"+e.toString());
+                        throw new ShopOperationException("addshopImgInputStream error:"+e.toString());
                     }
 
                     effectedNum=shopDao.updateShop(shop);
@@ -79,12 +79,12 @@ public class ShopServiceImpl implements ShopService {
         return new ShopExecution(ShopStateEnum.CHECK,shop);
     }
 
-    private void addShopImg(Shop shop, File shopImg) {
+    private void addshopImgInputStream(Shop shop, InputStream shopImgInputStream,String fileName) {
         //获取shop图片目录的相对路径
         String dest= PathUtil.getShopImagePath(shop.getShopId());
 
-        String shopImgAddr= ImageUtil.generateThumbnail(shopImg,dest);
-        System.out.println("lastRela:"+shopImgAddr);
-        shop.setShopImg(shopImgAddr);
+        String shopImgInputStreamAddr= ImageUtil.generateThumbnail(shopImgInputStream,fileName,dest);
+        System.out.println("lastRela:"+shopImgInputStreamAddr);
+        shop.setShopImg(shopImgInputStreamAddr);
     }
 }
