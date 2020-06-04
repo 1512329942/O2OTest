@@ -6,6 +6,7 @@ package com.se.util;
  * @Modified by:
  */
 
+import com.se.dto.ImageHolder;
 import net.coobird.thumbnailator.Thumbnailator;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.geometry.Position;
@@ -35,6 +36,29 @@ public class ImageUtil {
     private static Logger logger= LoggerFactory.getLogger(ImageUtil.class);
 
     /**
+     * @Author: Qi Weidong
+     * @Description: //storePath是文件的路径还是目录的路径
+     * 如果storePath是文件路径则删除该文件
+     * 如果是目录路径，就删除该目录下的所有文件
+     * @Date: 16:26 2020/5/29
+     * @Params: [storPath]
+     * @return: void
+     */
+    public static void deleteFileOrPath(String storPath){
+        File fileOrPath=new File(PathUtil.getImgBasePath()+storPath);
+        if(fileOrPath.exists()){
+            if (fileOrPath.isDirectory()){
+                File[] files=fileOrPath.listFiles();
+                for (int i=0;i<files.length;i++){
+                    files[i].delete();
+                }
+            }
+            fileOrPath.delete();
+        }
+    }
+
+
+    /**
      * 将Comm转换成File
      * @param cFile
      * @return
@@ -52,12 +76,12 @@ public class ImageUtil {
      * @Author: Qi Weidong
      * @Description: 处理缩略图，返回新生成的图片路径
      * @Date: 14:25 2020/5/27
-     * @Params: [thumbnail, targetAddr]
+     * @Params: [thumbnail, targetAddr：文件的相对基准路径]
      * @return: java.lang.String
      */
-    public static String generateThumbnail(InputStream thumbnailInputStream, String fileName, String targetAddr){
+    public static String generateThumbnail(ImageHolder thumbnail, String targetAddr){
         String realFileName=getRandomFileName();//随机文件名
-        String extension=getFileExtension(fileName);//文件扩展名
+        String extension=getFileExtension(thumbnail.getImageName());//文件扩展名
         makeDirPath(targetAddr);//创建目录
         //相对路径
         String relativeAddr=targetAddr+realFileName+extension;//相对路径+文件名
@@ -67,7 +91,7 @@ public class ImageUtil {
         File dest=new File(PathUtil.getImgBasePath()+relativeAddr);//绝对路径
         System.out.println(dest.getAbsolutePath());
         try{
-            Thumbnails.of(thumbnailInputStream).size(200,200).watermark(Positions.BOTTOM_RIGHT, ImageIO.
+            Thumbnails.of(thumbnail.getImage()).size(200,200).watermark(Positions.BOTTOM_RIGHT, ImageIO.
                     read(new File("F:\\校园商铺\\第26项目：SSM到Spring Boot-校园商铺平台\\images\\item\\watermark.jpg")),0.25f).
                     outputQuality(0.8f).toFile(dest);
         }catch (Exception e){
@@ -117,5 +141,27 @@ public class ImageUtil {
                 read(new File(basePath+"watermark.jpg")),0.25f).outputQuality(0.8f).
         toFile("F:\\校园商铺\\第26项目：SSM到Spring Boot-校园商铺平台\\images\\item\\shop\\15\\2017060523302118864new.jpg");
     }
+    //处理详情图
+    public static String generateNormalImg(ImageHolder thumbnail, String targetAddr) {
+        String realFileName=getRandomFileName();//随机文件名
+        String extension=getFileExtension(thumbnail.getImageName());//文件扩展名
+        makeDirPath(targetAddr);//创建目录
+        //相对路径
+        String relativeAddr=targetAddr+realFileName+extension;//相对路径+文件名
 
+        logger.debug("current ralativeAddr is:"+relativeAddr);
+        logger.debug("current complete Addr is:"+PathUtil.getImgBasePath()+relativeAddr);
+        File dest=new File(PathUtil.getImgBasePath()+relativeAddr);//绝对路径
+        System.out.println(dest.getAbsolutePath());
+        try{
+            Thumbnails.of(thumbnail.getImage()).size(337,640).watermark(Positions.BOTTOM_RIGHT, ImageIO.
+                    read(new File("F:\\校园商铺\\第26项目：SSM到Spring Boot-校园商铺平台\\images\\item\\watermark.jpg")),0.25f).
+                    outputQuality(0.9f).toFile(dest);
+        }catch (Exception e){
+            logger.error(e.toString());
+            e.toString();
+        }
+        return relativeAddr;
+
+    }
 }

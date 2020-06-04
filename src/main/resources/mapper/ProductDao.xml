@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.se.dao.ProductDao">
+    <!--useGeneratedKeys在操作成功后，就会返回id并复制给实体类-->
+    <insert id="insertProduct" parameterType="com.se.domain.Product" useGeneratedKeys="true"
+            keyProperty="productId" keyColumn="product_id">
+        insert into
+        tb_product(product_name,product_desc,img_addr,normal_price,promotion_price,priority,
+        create_time,last_edit_time,enable_status,product_category_id,shop_id)
+        values(#{productName},#{productDesc},#{imgAddr},#{normalPrice},#{promotionPrice},#{priority},#{createTime},#{lastEditTime},#{enableStatus},#{productCategory.productCategoryId},#{shop.shopId})
+    </insert>
+
+    <resultMap id="productMap" type="com.se.domain.Product">
+        <id property="productId" column="product_id"></id>
+        <result property="productName" column="product_name"></result>
+        <result property="productDesc" column="product_desc"></result>
+        <result property="imgAddr" column="img_addr"></result>
+        <result property="normalPrice" column="normal_price"></result>
+        <result property="promotionPrice" column="promotion_price"></result>
+        <result property="priority" column="priority"></result>
+        <result property="point" column="point"></result>
+        <result property="createTime" column="create_time"></result>
+        <result property="lastEditTime" column="last_edit_time"></result>
+        <result property="enableStatus" column="enable_status"></result>
+        <association property="productCategory" column="product_category_id" javaType="com.se.domain.ProductCategory">
+            <id property="productCategoryId" column="product_category_id"></id>
+            <result property="productCategoryName" column="product_category_name"></result>
+        </association>
+        <association property="shop" column="shop_id" javaType="com.se.domain.Shop">
+            <id property="shopId" column="shop_id"></id>
+            <result property="shopName" column="shop_name"></result>
+        </association>
+        <collection property="productImgList" column="product_id" ofType="com.se.domain.ProductImg">
+            <id property="productImgId" column="product_img_id"></id>
+            <result property="imgAddr" column="img_addr"></result>
+            <result property="imgDesc" column="img_desc"></result>
+            <result property="priority" column="priority"></result>
+            <result property="createTime" column="create_time"></result>
+            <result property="productId" column="product_id"></result>
+        </collection>
+    </resultMap>
+    <select id="queryProductById" resultMap="productMap" parameterType="long">
+        select p.product_id,p.product_name,p.product_desc,p.img_addr,p.normal_price,p.promotion_price,p.priority,
+        p.create_time,p.last_edit_time,p.enable_status,p.point,p.product_category_id,p.shop_id,
+        pm.product_img_id,pm.img_addr,pm.img_desc,pm.priority,pm.create_time
+        from tb_product as p
+        left join tb_product_img as pm on p.product_id=pm.product_id
+        where p.product_id=#{productId}
+        order by pm.priority desc
+     </select>
+    <!--根据商品id和店铺id更改商品信息-->
+    <update id="updateProduct" parameterType="com.se.domain.Product" keyProperty="productId" keyColumn="product_id"
+            useGeneratedKeys="true">
+        update tb_product
+        <set>
+            <if test="productName!=null">product_name=#{productName},</if>
+            <if test="productDesc!=null">product_desc=#{productDesc},</if>
+            <if test="imgAddr!=null">img_addr=#{imgAddr},</if>
+            <if test="normalPrice!=null">normal_price=#{normalPrice},</if>
+            <if test="promotionPrice!=null">promotion_price=#{promotionPrice},</if>
+            <if test="priority!=null">priority=#{priority},</if>
+            <if test="lastEditTime!=null">last_edit_time=#{lastEditTime},</if>
+            <if test="enableStatus!=null">enable_statue=#{enableStatus},</if>
+            <if test="productCategory!=null and productCategory.productCategoryId!=null">
+                product_category_id=#{productCategory.productCategoryId}
+            </if>
+        </set>
+        where product_id=#{productId} and shop_id=#{shop.shopId}
+    </update>
+    <!--queryProductList-->
+    <select id="queryProductList" resultType="com.se.domain.Product">
+        select * from tb_product
+        <where>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+                and shop_id=#{productCondition.shop.shopId}
+            </if>
+            <if test="productCondition.productCategory!=null and productCondition.productCategory.productCategoryId">
+                and product_category_id=#{productCondition.productCategory.productCategoryId}
+            </if>
+
+            <if test="productCondition.productName!=null">
+                and product_name like '%${productCondition.productName}%'
+            </if>
+            <if test="productCondition.enableStatus!=null">
+                and enable_status=#{productConditon.enableStatus}
+            </if>
+        </where>
+        order by
+        priority desc
+        limit #{rowIndex},#{pageSize}
+    </select>
+    <select id="queryProductCount" resultType="int">
+        select count(*) from tb_product
+
+        <where>
+            <if test="productCondition.shop!=null and productCondition.shop.shopId!=null">
+                and shop_id=#{productCondition.shop.shopId}
+            </if>
+            <if test="productCondition.productCategory!=null and productCondition.productCategory.productCategoryId">
+                and product_category_id=#{productCondition.productCategory.productCategoryId}
+            </if>
+
+            <if test="productCondition.productName!=null">
+                and product_name like '%${productCondition.productName}%'
+            </if>
+            <if test="productCondition.enableStatus!=null">
+                and enable_status=#{productConditon.enableStatus}
+            </if>
+        </where>
+
+    </select>
+</mapper>

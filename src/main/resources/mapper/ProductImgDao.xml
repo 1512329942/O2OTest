@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.se.dao.ProductImgDao">
+
+    <!--批量添加商品详情图片-->
+    <insert id="batchInsertProductImg" parameterType="java.util.List">
+        insert into tb_product_img(img_addr,img_desc,priority,create_time,product_id)
+        values
+        <foreach collection="list" item="productImg" index="index" separator=",">
+        (
+        #{productImg.imgAddr},
+        #{productImg.imgDesc},
+        #{productImg.priority},
+        #{productImg.createTime},
+        #{productImg.productId}
+        )
+        </foreach>
+    </insert>
+
+    <!--删除商品详情图片-->
+    <delete id="deleteProductImgByProductId" parameterType="long">
+        delete from tb_product_img
+        where product_id=#{productId}
+    </delete>
+    <!--查询-->
+    <select id="queryProductImgList" parameterType="long" resultType="com.se.domain.ProductImg">
+        select * from tb_product_img where product_id=#{productId}
+    </select>
+</mapper>

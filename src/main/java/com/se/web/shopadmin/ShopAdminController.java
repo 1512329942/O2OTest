@@ -6,9 +6,11 @@ package com.se.web.shopadmin;
  * @Modified by:
  */
 
+import com.beust.jcommander.IValueValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @Classname: ShopAdminController
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @Date: 2020/5/28 16:35
  */
 @Controller
-@RequestMapping(value = "shopadmin",method = RequestMethod.GET)
+@RequestMapping(value = "/shopadmin",method = RequestMethod.GET)
 public class ShopAdminController {
     /**
      * 1.指向shopoperation.html
@@ -29,4 +31,35 @@ public class ShopAdminController {
     public String shopOperation(){
         return "shop/shopoperation";
     }
+
+    /**
+     * 指向shoplist.html
+     * @return
+     */
+    @RequestMapping(value = "/shoplist")
+    public String shopList(){
+        return "shop/shoplist";
+    }
+
+
+    @RequestMapping(value = "/shopmanagement")
+    public String shopManagement(){
+        return "shop/shopmanagement";
+    }
+
+
+    @RequestMapping(value = "/productcategorymanagement",method = RequestMethod.GET)
+    public String productCategoryManagement(){
+        return "shop/productcategorymanagement";
+    }
+
+
+    @RequestMapping(value = "productoperation")
+    public String  productOperation(){
+        //转发至商品添加/编辑页面
+        return "shop/productoperation";
+    }
+
+
+
 }

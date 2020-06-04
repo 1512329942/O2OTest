@@ -24,6 +24,7 @@ public class ShopCategory {
 	private Date createTime;
 	// 最近的更新时间
 	private Date lastEditTime;
+
 	// 父类别
 	private ShopCategory parent;
 

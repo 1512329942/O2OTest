@@ -1,4 +1,4 @@
-package com.se.service;
+package TestSpring;
 /**
  * @Author: Qi Weidong
  * @Description:
@@ -11,8 +11,11 @@ import com.se.domain.Area;
 import com.se.domain.PersonInfo;
 import com.se.domain.Shop;
 import com.se.domain.ShopCategory;
+import com.se.dto.ImageHolder;
 import com.se.dto.ShopExecution;
 import com.se.enums.ShopStateEnum;
+import com.se.exceptions.ShopOperationException;
+import com.se.service.ShopService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +34,10 @@ import java.util.Date;
 public class ShopServiceTest extends BaseTest {
     @Autowired
     private ShopService shopService;
+
+    /**
+     * addshop
+     */
     @Test
     public void testAddShop(){
         Shop shop=new Shop();
@@ -60,8 +67,45 @@ public class ShopServiceTest extends BaseTest {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
-        ShopExecution shopExecution = shopService.addShop(shop, is,shopImg.getName());
+        ImageHolder imageHolder=new ImageHolder(shopImg.getName(),is);
+        ShopExecution shopExecution = shopService.addShop(shop,imageHolder);
         System.out.println(shopExecution.getState());
+    }
+    /**
+     * modifyShop
+     */
+    @Test
+    public void testModifyShop()throws ShopOperationException,FileNotFoundException {
+        Shop shop=new Shop();
+        shop.setShopId(56L);
+        shop.setShopName("修改后的店铺名字");
+        File shopImg=new File("F:\\校园商铺\\第26项目：SSM到Spring Boot-校园商铺平台\\images\\item\\shop\\27\\2017060715512185473.jpg");
+
+        InputStream is=new FileInputStream(shopImg);
+        ImageHolder imageHolder=new ImageHolder("dabai.jpg",is);
+        ShopExecution shopExecution=shopService.modifyShop(shop,imageHolder);
+        System.out.println("新图片地址："+shopExecution.getShop().getShopImg());
+    }
+
+    /**
+     * getShopList
+     */
+    @Test
+    public void testGetShopList(){
+        Shop shopCondition =new Shop();
+        PersonInfo owner=new PersonInfo();
+        owner.setUserId(8L);
+        shopCondition.setOwner(owner);
+
+        ShopCategory sc=new ShopCategory();
+        sc.setShopCategoryId(14L);
+        shopCondition.setShopCategory(sc);
+        ShopExecution shopList = shopService.getShopList(shopCondition, 6, 2);
+        System.out.println("店铺列表数："+shopList.getShopList().size());
+        for(Shop shop:shopList.getShopList()){
+            System.out.println(shop.getShopId());
+        }
+        System.out.println("店铺总数："+shopList.getCount());
+
     }
 }

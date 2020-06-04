@@ -11,5 +11,9 @@ import java.util.List;
  * @Modified by:
  */
 public interface AreaService {
+    /**
+     * 获取区域列表
+     * @return
+     */
     List<Area> getAreaList();
 }

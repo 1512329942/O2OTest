@@ -20,7 +20,7 @@ import java.util.List;
  * @Author: Qi weidong
  * @Date: 2020/5/26 12:42
  */
-public class TestArea extends BaseTest  {
+public class AreaTest extends BaseTest  {
     @Autowired
     private AreaDao areaDao;
     @Test

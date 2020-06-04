@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Classname: ShopTest
@@ -25,6 +26,9 @@ import java.util.Date;
 public class ShopTest extends BaseTest{
     @Autowired
     private ShopDao  shopDao;
+    /**
+     * insertShop
+     */
     @Test
     public void testInsertShop(){
         Shop shop=new Shop();
@@ -48,6 +52,10 @@ public class ShopTest extends BaseTest{
         int effectedNum=shopDao.insertShop(shop);
         System.out.println(effectedNum);
     }
+
+    /**
+     * updateShop
+     */
     @Test
     public void testUpdateShop(){
         Shop shop=new Shop();
@@ -62,4 +70,38 @@ public class ShopTest extends BaseTest{
         int effectedNum=shopDao.updateShop(shop);
         System.out.println(effectedNum);
     }
+    /**
+     * queryShopById
+     */
+    @Test
+    public void testQueryShopById(){
+        long shopId=27L;
+        Shop shop =shopDao.queryByShopId(shopId);
+        System.out.println(shop.getShopId()+":"+shop.getShopName());
+        System.out.println(shop.getArea().getAreaName());
+        System.out.println(shop.getShopCategory().getShopCategoryName());
+    }
+
+    /**
+     * queryShopList
+     * queryShopCount
+     */
+    @Test
+    public void testQueryShopListAndCount(){
+        Shop shopCondition =new Shop();
+        PersonInfo owner=new PersonInfo();
+        owner.setUserId(8L);
+        shopCondition.setOwner(owner);
+
+        ShopCategory sc=new ShopCategory();
+        sc.setShopCategoryId(14L);
+        shopCondition.setShopCategory(sc);
+        shopCondition.setShopName("正式的店铺名字");
+        List<Shop> shopList = shopDao.queryShopList(shopCondition, 0, 5);
+        System.out.println("店铺列表的大小"+shopList.size());
+
+        int shopList2=shopDao.queryShopCount(shopCondition);
+        System.out.println("店铺的总数:"+shopList2);
+    }
+
 }
